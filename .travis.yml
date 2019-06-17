@@ -1,12 +1,10 @@
 sudo: true
 os: trusty
 cache: false
-
 env:
 - URL=https://developer.salesforce.com/media/salesforce-cli/sfdx-linux-amd64.tar.xz
-
 before_install:
-- openssl aes-256-cbc -K $encrypted_b1fbf710b918_key -iv $encrypted_b1fbf710b918_iv
+- openssl aes-256-cbc -K $encrypted_2145127c9ab6_key -iv $encrypted_2145127c9ab6_iv
   -in assets/server.key.enc -out assets/server.key -d
 - export SFDX_AUTOUPDATE_DISABLE=false
 - export SFDX_USE_GENERIC_UNIX_KEYCHAIN=true
@@ -19,11 +17,48 @@ before_install:
 - export PATH=./sfdx/$(pwd):$PATH
 - sfdx --version
 - sfdx plugins --core
-- sfdx force:auth:jwt:grant --clientid $CONSUMERKEY --jwtkeyfile assets/server.key --username $USERNAME --setdefaultdevhubusername -a HubOrg
-
+- sfdx force:auth:jwt:grant --clientid $CONSUMERKEY --jwtkeyfile assets/server.key
+  --username $USERNAME --setdefaultdevhubusername -a HubOrg
 script:
-- sfdx force:org:create -v HubOrg -s -f config/project-scratch-def.json -a ciorg --wait 2
+- sfdx force:org:create -v HubOrg -s -f config/project-scratch-def.json -a ciorg --wait
+  2
 - sfdx force:org:display -u ciorg
 - sfdx force:source:push -u ciorg
 - sfdx force:apex:test:run -u ciorg --wait 10
 - sfdx force:org:delete -u ciorg -p
+
+
+
+Consumer Key  
+3MVG9KsVczVNcM8xKK1rVaTvHrgAr55A8V2Ia2aVCFsnxpIVhStv2jiJ4wNSCrwEW0qZ8r6geqPN0UeKPllzx
+Consumer Secret 
+1A0E846F328AA178FD8562106F197C07DD4DAB406BFC359DD43B843AE1A7659B
+Selected OAuth Scopes 
+Access and manage your data (api)
+Provide access to your data via the Web (web)
+Perform requests on your behalf at any time (refresh_token, offline_access)
+Callback URL  
+http://localhost:1717/OauthRedirect
+
+export  SFDX_AUDIENCE_URL=https://login.salesforce.com
+
+ansible|xzeng-ltm:dreamhouse-sfdx xzeng$ sfdx force:auth:jwt:grant -d -a TH1_DevHub -i 3MVG9KsVczVNcM8xKK1rVaTvHrgAr55A8V2Ia2aVCFsnxpIVhStv2jiJ4wNSCrwEW0qZ8r6geqPN0UeKPllzx -f /Users/xzeng/JWT/xzeng/server.key -u xzeng@curious-goat-o9ak5x.com
+WARNING: apiVersion configuration overridden at "45.0"
+Successfully authorized xzeng@curious-goat-o9ak5x.com with org ID 00D1U0000011eGLUAY
+
+
+ansible|xzeng-ltm:sfdx-travisci xzeng$ travis login --org --auto
+Successfully logged in as dreamputer!
+ansible|xzeng-ltm:sfdx-travisci xzeng$ travis encrypt-file assets/server.key assets/server.key.enc --add
+encrypting assets/server.key for dreamputer/sfdx-travisci
+storing result as assets/server.key.enc
+storing secure env variables for decryption
+
+Make sure to add assets/server.key.enc to the git repository.
+Make sure not to add assets/server.key to the git repository.
+Commit all changes to your .travis.yml.
+
+ansible|xzeng-ltm:sfdx-travisci xzeng$ travis env set CONSUMERKEY 3MVG9KsVczVNcM8xKK1rVaTvHrgAr55A8V2Ia2aVCFsnxpIVhStv2jiJ4wNSCrwEW0qZ8r6geqPN0UeKPllzx
+[+] setting environment variable $CONSUMERKEY
+ansible|xzeng-ltm:sfdx-travisci xzeng$ travis env set USERNAME xzeng@curious-goat-o9ak5x.com
+[+] setting environment variable $USERNAME
